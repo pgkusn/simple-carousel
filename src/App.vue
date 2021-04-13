@@ -2,13 +2,9 @@
     <div class="container">
         <div class="carousel" ref="carousel">
             <transition-group tag="div" :name="transitionName" class="showcase">
-                <div
-                    class="showcase__item"
-                    v-for="(img, index) in images"
-                    :key="img.src"
-                    v-show="index === currentIndex">
-                    <img :src="img.src" alt="">
-                </div>
+                <template v-for="(img, index) in images" :key="img.id">
+                    <img v-show="index === currentIndex" :src="img.src" class="showcase__item">
+                </template>
             </transition-group>
             <div class="pagination">
                 <button class="pagination__left" @click="setIndex(currentIndex - 1)">←</button>
@@ -24,12 +20,12 @@
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import Hammer from 'hammerjs';
-import useData from '@/data';
+import data from '@/data.json';
 
 export default {
     name: 'App',
     setup () {
-        const images = useData();
+        const images = ref(data);
         const currentIndex = ref(0);
         const transitionName = ref('right-in');
         const carousel = ref(null);
