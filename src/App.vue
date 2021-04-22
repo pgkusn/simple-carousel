@@ -29,29 +29,39 @@ export default {
         const currentIndex = ref(0);
         const transitionName = ref('right-in');
         const carousel = ref(null);
-        let timer;
+        let timer = null;
         const setIndex = index => {
             transitionName.value = index > currentIndex.value ? 'right-in' : 'left-in';
             currentIndex.value = index > images.value.length - 1 ? 0 : index < 0 ? images.value.length - 1 : index;
         };
         const autoPlay = () => {
+            if (timer) return;
             timer = setInterval(() => {
                 setIndex(currentIndex.value + 1);
             }, 2000);
         };
         const stopPlay = () => {
             clearInterval(timer);
+            timer = null;
+        };
+        const visibilityChangeHandler = () => {
+            if (document.visibilityState === 'hidden') {
+                stopPlay();
+            }
+            else if (document.visibilityState === 'visible') {
+                autoPlay();
+            }
         };
         onMounted(() => {
             autoPlay();
             carousel.value.addEventListener('mouseenter', stopPlay);
             carousel.value.addEventListener('mouseleave', autoPlay);
-
             document.querySelectorAll('img').forEach(el => {
                 el.addEventListener('dragstart', () => {
                     event.preventDefault();
                 });
             });
+            document.addEventListener('visibilitychange', visibilityChangeHandler);
 
             // init swipe event
             const mc = new Hammer(carousel.value);
